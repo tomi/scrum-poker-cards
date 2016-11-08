@@ -1,6 +1,13 @@
 {
   "name": "ScrumPokerCards",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "React Native based mobile app for Scrum poker cards",
+  "repository": {
+    "url": "git@github.com:tomi/scrum-poker-cards.git",
+    "type": "git"
+  },
+  "author": "Tomi Turtiainen <tomi.turtiainen@gmail.com>",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
