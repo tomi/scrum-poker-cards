@@ -4,7 +4,8 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableOpacity
 } from "react-native";
 
 const styles = StyleSheet.create({
@@ -37,21 +38,36 @@ const styles = StyleSheet.create({
 });
 
 export default class Card extends Component {
+  setNativeProps(nativeProps) {
+    this._root.setNativeProps(nativeProps);
+  }
+
   render() {
     if (!this.props.value) {
+        // <TouchableOpacity style={{ flex: 1 }}>
+        // </TouchableOpacity>
       return (
-        <View style={ styles.hiddenContainer } />
+          <View style={ styles.hiddenContainer } />
       );
     }
 
+    // const onPressCallback = this.props.onPress || null;
+
+      // <TouchableOpacity style={{ flex: 1 }} onPress={ onPressCallback }>
+      // </TouchableOpacity>
     return (
-      <View style={styles.container}>
-        <Text style={styles.text}>{this.props.value}</Text>
-      </View>
+        <View
+          style={ [styles.container, this.props.style] }
+          ref={ component => this._root = component }
+        >
+          <Text style={ styles.text }>{ this.props.value }</Text>
+        </View>
     );
   }
 }
 
 Card.propTypes = {
-  value: React.PropTypes.string.isRequired
+  value:   React.PropTypes.string,
+  onPress: React.PropTypes.func,
+  style: React.PropTypes.object,
 };
