@@ -16,14 +16,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "space-around",
-    margin: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   hiddenContainer: {
     borderWidth: 0,
     flex: 1,
     alignItems: "center",
     justifyContent: "space-around",
-    margin: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   text: {
     fontSize: 30
