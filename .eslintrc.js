@@ -10,6 +10,14 @@ module.exports = {
 		"eslint:recommended",
 		"plugin:react/recommended"
 	],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
 	"rules": {
+    "react/jsx-curly-spacing": [2, "always", { "spacing": {
+      "objectLiterals": "never"
+    }}]
 	}
 };
