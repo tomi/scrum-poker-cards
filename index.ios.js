@@ -16,6 +16,7 @@ import {
 
 import _ from "lodash";
 import Card from "./card";
+import Orientation from "react-native-orientation";
 
 const CARD_VALUES = [
   "0", "½", "1", "2", "3", "5",
@@ -81,4 +82,5 @@ const styles = StyleSheet.create({
   }
 });
 
+Orientation.lockToPortrait();
 AppRegistry.registerComponent("ScrumPokerCards", () => ScrumPokerCards);
