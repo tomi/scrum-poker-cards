@@ -4,9 +4,10 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
-  View,
-  TouchableOpacity
+  View
 } from "react-native";
+
+const CARD_ASPECT_RATIO = 400 / 558;
 
 const styles = StyleSheet.create({
   container: {
@@ -42,6 +43,16 @@ const styles = StyleSheet.create({
 });
 
 export default class Card extends Component {
+  constructor() {
+    super();
+
+    this.onLayout = this.onLayout.bind(this);
+
+    this.state = {
+      style: {}
+    };
+  }
+
   setNativeProps(nativeProps) {
     this._root.setNativeProps(nativeProps);
   }
@@ -61,12 +72,40 @@ export default class Card extends Component {
       // </TouchableOpacity>
     return (
         <View
-          style={ [styles.container, this.props.style] }
+          style={ [styles.container, this.props.style, this.state.style] }
           ref={ component => this._root = component }
+          onLayout={ this.onLayout }
         >
           <Text style={ styles.text }>{ this.props.value }</Text>
         </View>
     );
+  }
+
+  onLayout(e) {
+    // Maintain aspect ratio of the card
+    const layout = e.nativeEvent.layout;
+
+    const measuredHeight = layout.width / CARD_ASPECT_RATIO;
+    const currentHeight  = layout.height;
+
+    if (measuredHeight > currentHeight) {
+      const measuredWidth = layout.height * CARD_ASPECT_RATIO;
+
+      this.setState({
+        style: {
+          width:  measuredWidth,
+          height: layout.height
+        }
+      });
+    } else {
+      this.setState({
+        style: {
+          width:  layout.width,
+          height: measuredHeight
+        }
+      });
+    }
+
   }
 }
 
