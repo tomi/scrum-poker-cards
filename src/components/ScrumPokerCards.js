@@ -25,6 +25,7 @@ export default class ScrumPokerCards extends Component {
     super();
 
     this.state = {
+      selectedCard: null,
       rows:      _.chunk(CARD_VALUES, CARDS_PER_ROW),
       opacities: CARD_VALUES.map(() => 1),
     };
@@ -32,6 +33,19 @@ export default class ScrumPokerCards extends Component {
 
   render() {
     console.log("RENDER");
+    if (this.state.selectedCard) {
+      return (
+        <View style={ styles.singleCardContainer }>
+          <TouchableHighlight
+            style={{ flex: 1 }}
+            onPress={ this.onCardPressed.bind(this, null) }
+          >
+            <Card value={ this.state.selectedCard } />
+          </TouchableHighlight>
+        </View>
+      );
+    }
+
     const rows = this.state.rows.map((row, i) => {
       const cards = row.map((cardValue, j) => {
 
@@ -43,7 +57,7 @@ export default class ScrumPokerCards extends Component {
           <TouchableHighlight
             key={ j }
             style={{ flex: 1 }}
-            onPress={ this.onCardPressed.bind(this, idx) }
+            onPress={ this.onCardPressed.bind(this, cardValue) }
           >
             <Card style={{ opacity }} key={ cardValue } value={ cardValue } />
           </TouchableHighlight>
@@ -64,17 +78,24 @@ export default class ScrumPokerCards extends Component {
     );
   }
 
-  onCardPressed(idx) {
-    console.log("HIDE", idx);
+  onCardPressed(card) {
+    console.log("HIDE", card);
 
     const newState = _.cloneDeep(this.state);
-    newState.opacities[idx] = 0;
+    newState.selectedCard = card;
 
     this.setState(newState);
   }
 }
 
 const styles = StyleSheet.create({
+  singleCardContainer: {
+    flex: 1,
+    marginTop: 50,
+    marginBottom: 50,
+    marginLeft: 20,
+    marginRight: 20,
+  },
   container: {
     flex: 1,
     flexDirection: "column",
