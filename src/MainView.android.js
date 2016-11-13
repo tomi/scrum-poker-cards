@@ -23,5 +23,6 @@ export default class MainLayout extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
+     backgroundColor: "#00a651",
+ },
 });

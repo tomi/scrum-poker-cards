@@ -12,8 +12,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#7FDBFF",
-    backgroundColor: "#0074D9",
+    borderColor: "#111111",
+    backgroundColor: "#FFFFFF",
     flex: 1,
     alignItems: "center",
     justifyContent: "space-around",
@@ -21,6 +21,10 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
+    shadowColor: "#111111",
+    shadowRadius: 2,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.8,
   },
   hiddenContainer: {
     borderWidth: 0,
