@@ -4,10 +4,12 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableHighlight,
+  Animated
 } from "react-native";
 
-const CARD_ASPECT_RATIO = 400 / 558;
+// const CARD_ASPECT_RATIO = 400 / 558;
 
 const styles = StyleSheet.create({
   container: {
@@ -17,15 +19,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     flex: 1,
     alignItems: "center",
-    justifyContent: "space-around",
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
-    marginBottom: 10,
+    justifyContent: "center",
     shadowColor: "#111111",
     shadowRadius: 2,
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.8,
+  },
+  card: {
+    alignSelf: "center"
   },
   hiddenContainer: {
     borderWidth: 0,
@@ -42,75 +43,46 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class Card extends Component {
+class Card extends Component {
   constructor() {
     super();
 
-    this.onLayout = this.onLayout.bind(this);
-
-    this.state = {
-      style: {}
-    };
+    this.setNativeProps = this.setNativeProps.bind(this);
   }
 
   setNativeProps(nativeProps) {
-    this._root.setNativeProps(nativeProps);
+    if (this._root) {
+      this._root.setNativeProps(nativeProps);
+    }
   }
 
   render() {
     if (!this.props.value) {
-        // <TouchableOpacity style={{ flex: 1 }}>
-        // </TouchableOpacity>
       return (
-          <View style={ styles.hiddenContainer } />
+          <View style={ [styles.hiddenContainer, this.props.style] }/>
       );
     }
 
-    // const onPressCallback = this.props.onPress || null;
-
-      // <TouchableOpacity style={{ flex: 1 }} onPress={ onPressCallback }>
-      // </TouchableOpacity>
     return (
-        <View
-          style={ [styles.container, this.props.style, this.state.style] }
+      <TouchableHighlight
           ref={ component => this._root = component }
-          onLayout={ this.onLayout }
-        >
+          style={ [styles.container, this.props.style] }
+          onPress={ () => this.props.onPress(this.props.value) }>
+        <View style={ styles.card }>
           <Text style={ styles.text }>{ this.props.value }</Text>
         </View>
+      </TouchableHighlight>
     );
-  }
-
-  onLayout(e) {
-    // Maintain aspect ratio of the card
-    const layout = e.nativeEvent.layout;
-
-    const measuredHeight = layout.width / CARD_ASPECT_RATIO;
-    const currentHeight  = layout.height;
-
-    if (measuredHeight > currentHeight) {
-      const measuredWidth = layout.height * CARD_ASPECT_RATIO;
-
-      this.setState({
-        style: {
-          width:  measuredWidth,
-          height: layout.height
-        }
-      });
-    } else {
-      this.setState({
-        style: {
-          width:  layout.width,
-          height: measuredHeight
-        }
-      });
-    }
-
   }
 }
 
 Card.propTypes = {
-  value:   React.PropTypes.string,
-  onPress: React.PropTypes.func,
-  style: React.PropTypes.object,
+  value:     React.PropTypes.string,
+  onPress:   React.PropTypes.func,
+  style:     React.PropTypes.object,
+  textStyle: React.PropTypes.object,
 };
+
+const AnimatedCard = Animated.createAnimatedComponent(Card);
+
+export default AnimatedCard;

@@ -4,11 +4,11 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   View,
-  TouchableHighlight
+  Animated
 } from "react-native";
 
 import _ from "lodash";
-import Card from "./Card";
+import AnimatedCard from "./Card";
 
 const CARD_VALUES = [
   "0", "½", "1",
@@ -18,73 +18,146 @@ const CARD_VALUES = [
   "∞", "☕", null
 ];
 
-const CARDS_PER_ROW = 3;
-
 export default class ScrumPokerCards extends Component {
   constructor() {
     super();
 
+    this.onLayout         = this.onLayout.bind(this);
+    this.onCardPressed    = this.onCardPressed.bind(this);
+
     this.state = {
       selectedCard: null,
-      rows:      _.chunk(CARD_VALUES, CARDS_PER_ROW),
-      opacities: CARD_VALUES.map(() => 1),
+      cards: []
     };
   }
 
   render() {
-    console.log("RENDER");
-    if (this.state.selectedCard) {
+    if (_.isEmpty(this.state.cards)) {
       return (
-        <View style={ styles.singleCardContainer }>
-          <TouchableHighlight
-            style={{ flex: 1 }}
-            onPress={ this.onCardPressed.bind(this, null) }
-          >
-            <Card value={ this.state.selectedCard } />
-          </TouchableHighlight>
-        </View>
+        <View onLayout={ this.onLayout } style={{ flex: 1 }} />
       );
     }
 
-    const rows = this.state.rows.map((row, i) => {
-      const cards = row.map((cardValue, j) => {
-
-        const idx = i * CARDS_PER_ROW + j;
-        const opacity = this.state.opacities[idx];
-        console.log("RENDER", idx, opacity);
-
-        return (
-          <TouchableHighlight
-            key={ j }
-            style={{ flex: 1 }}
-            onPress={ this.onCardPressed.bind(this, cardValue) }
-          >
-            <Card style={{ opacity }} key={ cardValue } value={ cardValue } />
-          </TouchableHighlight>
-        );
-      });
-
+    const cards = this.state.cards.map((card, i) => {
       return (
-        <View key={ i } style={ styles.row }>
-          { cards }
-        </View>
-      )
+          <AnimatedCard style={{
+            left:     card.x,
+            top:      card.y,
+            width:    card.width,
+            height:   card.height,
+            opacity:  card.opacity,
+            zIndex:   card.zIndex,
+            position: "absolute"
+          }} key={ i } value={ card.value } onPress={ this.onCardPressed } />
+      );
     });
 
     return (
       <View style={ styles.container }>
-        { rows }
+        { cards }
       </View>
     );
   }
 
-  onCardPressed(card) {
-    console.log("HIDE", card);
+  onCardPressed(cardValue) {
+    const pressedCard = _.find(this.state.cards, c => c.value === cardValue);
 
-    const newState = _.cloneDeep(this.state);
-    newState.selectedCard = card;
+    if (this.state.selectedCard === cardValue) {
 
-    this.setState(newState);
+      this.state.cards.forEach(card => {
+        if (card === pressedCard) {
+          const coords = this._getCardCoordinates(cardValue);
+
+          Animated.parallel([
+            Animated.timing(card.x,      { toValue: coords.x,      duration: 500 }),
+            Animated.timing(card.y,      { toValue: coords.y,      duration: 500 }),
+            Animated.timing(card.width,  { toValue: coords.width,  duration: 500 }),
+            Animated.timing(card.height, { toValue: coords.height, duration: 500 }),
+          ]).start();
+        } else {
+          Animated.timing(card.opacity, {
+            toValue: 1,
+            duration: 500
+          }).start();
+        }
+      });
+
+      this.state.cards.forEach(card => {
+        Animated.timing(card.opacity, {
+          toValue: 1,
+          duration: 500
+        }).start();
+      });
+
+      this.setState({ selectedCard: null });
+
+    } else {
+
+      this.state.cards.forEach(card => {
+        if (card === pressedCard) {
+          const coords = this._getSelectedCardCoordinates();
+
+          Animated.parallel([
+            Animated.timing(card.x,      { toValue: coords.x, duration: 500 }),
+            Animated.timing(card.y,      { toValue: coords.y, duration: 500 }),
+            Animated.timing(card.width,  { toValue: coords.width, duration: 500 }),
+            Animated.timing(card.height, { toValue: coords.height, duration: 500 }),
+            Animated.timing(card.zIndex, { toValue: 1, duration: 0 }),
+            // Animated.timing(card.fontSize, { toValue: 60, duration: 500 }),
+          ]).start();
+        } else {
+          Animated.parallel([
+            Animated.timing(card.opacity, { toValue: 0, duration: 500 }),
+            Animated.timing(card.zIndex, { toValue: 0, duration: 0 }),
+          ]).start();
+        }
+      });
+
+      this.setState({ selectedCard: cardValue });
+    }
+  }
+
+  onLayout(e) {
+    const layout = e.nativeEvent.layout;
+    this.width = layout.width;
+    this.height = layout.height;
+
+    const cardCoords = CARD_VALUES.map(cardValue => {
+      const coords = this._getCardCoordinates(cardValue);
+
+      return Object.assign({
+        value: cardValue,
+        opacity: new Animated.Value(1),
+        zIndex: new Animated.Value(0),
+        // fontSize: new Animated.Value(30),
+      }, _.mapValues(coords, x => new Animated.Value(x)));
+    });
+
+    this.setState({
+      cards: cardCoords
+    });
+  }
+
+  _getCardCoordinates(cardValue) {
+    const incX = this.width / 3;
+    const incY = this.height / 5;
+    const idx = CARD_VALUES.indexOf(cardValue);
+
+    return {
+      x:      (idx % 3) * incX,
+      y:      Math.floor(idx / 3) * incY,
+      width:  incX - 20,
+      height: incY - 20,
+    };
+  }
+
+  _getSelectedCardCoordinates() {
+    return {
+      x: 20,
+      y: 20,
+      width: this.width - 40,
+      height: this.height - 40
+    };
   }
 }
 
