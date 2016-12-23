@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   Animated
 } from "react-native";
+import _ from "lodash";
 
 // const CARD_ASPECT_RATIO = 400 / 558;
 
@@ -47,29 +48,36 @@ class Card extends Component {
   constructor() {
     super();
 
-    this.setNativeProps = this.setNativeProps.bind(this);
+    // this.setNativeProps = this.setNativeProps.bind(this);
   }
 
-  setNativeProps(nativeProps) {
-    if (this._root) {
-      this._root.setNativeProps(nativeProps);
-    }
-  }
+  // setNativeProps(nativeProps) {
+  //   if (this._root) {
+  //     this._root.setNativeProps(nativeProps);
+  //   }
+  // }
 
   render() {
+    const viewStyles = _.omit(this.props.style, "fontSize");
+    const textStyles = { fontSize: this.props.style.fontSize };
+
     if (!this.props.value) {
       return (
-          <View style={ [styles.hiddenContainer, this.props.style] }/>
+          <View style={ [styles.hiddenContainer, viewStyles] }/>
       );
     }
 
     return (
       <TouchableHighlight
           ref={ component => this._root = component }
-          style={ [styles.container, this.props.style] }
+          style={ [styles.container, viewStyles] }
           onPress={ () => this.props.onPress(this.props.value) }>
         <View style={ styles.card }>
-          <Text style={ styles.text }>{ this.props.value }</Text>
+          <Text
+            style={ [styles.text, textStyles] }
+          >
+            { this.props.value }
+          </Text>
         </View>
       </TouchableHighlight>
     );

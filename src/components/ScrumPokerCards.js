@@ -22,8 +22,8 @@ export default class ScrumPokerCards extends Component {
   constructor() {
     super();
 
-    this.onLayout         = this.onLayout.bind(this);
-    this.onCardPressed    = this.onCardPressed.bind(this);
+    this.onLayout      = this.onLayout.bind(this);
+    this.onCardPressed = this.onCardPressed.bind(this);
 
     this.state = {
       selectedCard: null,
@@ -47,6 +47,7 @@ export default class ScrumPokerCards extends Component {
             height:   card.height,
             opacity:  card.opacity,
             zIndex:   card.zIndex,
+            fontSize: card.fontSize,
             position: "absolute"
           }} key={ i } value={ card.value } onPress={ this.onCardPressed } />
       );
@@ -73,6 +74,7 @@ export default class ScrumPokerCards extends Component {
             Animated.timing(card.y,      { toValue: coords.y,      duration: 500 }),
             Animated.timing(card.width,  { toValue: coords.width,  duration: 500 }),
             Animated.timing(card.height, { toValue: coords.height, duration: 500 }),
+            Animated.timing(card.fontSize, { toValue: 30, duration: 500 }),
           ]).start();
         } else {
           Animated.timing(card.opacity, {
@@ -103,7 +105,7 @@ export default class ScrumPokerCards extends Component {
             Animated.timing(card.width,  { toValue: coords.width, duration: 500 }),
             Animated.timing(card.height, { toValue: coords.height, duration: 500 }),
             Animated.timing(card.zIndex, { toValue: 1, duration: 0 }),
-            // Animated.timing(card.fontSize, { toValue: 60, duration: 500 }),
+            Animated.timing(card.fontSize, { toValue: 80, duration: 500 }),
           ]).start();
         } else {
           Animated.parallel([
@@ -129,7 +131,7 @@ export default class ScrumPokerCards extends Component {
         value: cardValue,
         opacity: new Animated.Value(1),
         zIndex: new Animated.Value(0),
-        // fontSize: new Animated.Value(30),
+        fontSize: new Animated.Value(30),
       }, _.mapValues(coords, x => new Animated.Value(x)));
     });
 
